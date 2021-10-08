@@ -1,8 +1,9 @@
 from playwright.sync_api import Page
+from django.test import LiveServerTestCase
 import pytest
 
-def test_new_visitor(page):
-    page.goto("http://localhost:8000")
+def test_new_visitor(page, live_server):
+    page.goto(live_server.url)
     page.set_default_timeout(3000)
     assert 'To-Do' in page.title()
     placeholder = page.get_attribute("id=id_new_item", "placeholder")
@@ -18,4 +19,5 @@ def test_new_visitor(page):
     new_item_input.press("Enter")
     text = page.locator("id=id_list_table").inner_text()
     assert "2: Use peacock feathers to make a fly" in text
+
 
