@@ -6,9 +6,12 @@ import os
 
 def test_new_visitor(page, live_server):
     staging_server = os.environ.get('STAGING_SERVER')
+    use_server = live_server.url
     if staging_server:
-        live_server.url = 'http://' + staging_server
-    page.goto(live_server.url)
+        print(staging_server)
+        use_server = 'http://' + staging_server
+    print(use_server)
+    page.goto(use_server)
     page.set_default_timeout(3000)
     assert 'To-Do' in page.title()
     placeholder = page.get_attribute("id=id_new_item", "placeholder")

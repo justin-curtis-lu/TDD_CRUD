@@ -8,11 +8,12 @@ import os
 
 def test_multiple_users_can_start_lists_at_different_urls(context, live_server):
     staging_server = os.environ.get('STAGING_SERVER')
+    use_server = live_server.url
     if staging_server:
-        live_server.url = 'http://' + staging_server
+        use_server = 'http://' + staging_server
     p = context.new_page()
     p.set_default_timeout(3000)
-    p.goto(live_server.url)
+    p.goto(use_server)
 
     new_item_input = p.locator("id=id_new_item")
     new_item_input.fill("Buy peacock feathers")
@@ -26,7 +27,7 @@ def test_multiple_users_can_start_lists_at_different_urls(context, live_server):
 
     # open a new p, try again
     p = context.new_page()
-    p.goto(live_server.url)
+    p.goto(use_server)
 
     # the new list doesn't have old text upon opening
     text = p.inner_text("body")
