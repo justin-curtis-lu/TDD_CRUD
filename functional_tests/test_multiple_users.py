@@ -1,4 +1,5 @@
 import playwright.sync_api
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 
 def test_multiple_users_can_start_lists_at_different_urls(context, live_server):

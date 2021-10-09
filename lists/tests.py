@@ -16,7 +16,7 @@ def test_home_page_html(client):
 
     assert html.startswith('<html>')
     assert '<title>To-Do lists</title>' in html
-    assert html.strip().endswith('</html>')
+    assert html.strip().endswith('<html lang="en>')
 
     assertTemplateUsed(response, 'home.html')
 

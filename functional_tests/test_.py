@@ -1,5 +1,6 @@
 from playwright.sync_api import Page
-from django.test import LiveServerTestCase
+# from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import pytest
 
 def test_new_visitor(page, live_server):
