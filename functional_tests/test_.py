@@ -2,8 +2,12 @@ from playwright.sync_api import Page
 # from django.test import LiveServerTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import pytest
+import os
 
 def test_new_visitor(page, live_server):
+    staging_server = os.environ.get('STAGING_SERVER')
+    if staging_server:
+        live_server_url = 'http://' + staging_server
     page.goto(live_server.url)
     page.set_default_timeout(3000)
     assert 'To-Do' in page.title()

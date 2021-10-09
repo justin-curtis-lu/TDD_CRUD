@@ -1,8 +1,15 @@
 import playwright.sync_api
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+import os
+# from dotenv import load_dotenv
 
+# load_dotenv()
+# GALAXY_AUTH = os.getenv('STAGING_SERVER')
 
 def test_multiple_users_can_start_lists_at_different_urls(context, live_server):
+    staging_server = os.environ.get('STAGING_SERVER')
+    if staging_server:
+        live_server_url = 'http://' + staging_server
     p = context.new_page()
     p.set_default_timeout(3000)
     p.goto(live_server.url)
