@@ -8,7 +8,7 @@ from lists.views import home_page
 from lists.models import Item
 
 
-# Home Test Cases
+# Home View Test Cases
 @pytest.mark.django_db
 def test_home_page_html(client):
     response = client.get('/')
@@ -35,7 +35,7 @@ def test_redirects_after_post(client):
     response = client.post('/', data={'item_text': 'A new list item'})
 
     assert response.status_code == 302
-    assert response['location'] == '/'
+    assert response['location'] == '/lists/the-only-list-in-the-world/'
 
 
 @pytest.mark.django_db
@@ -44,15 +44,23 @@ def test_only_saves_items_when_necessary(client):
     assert Item.objects.count() == 0
 
 
+# List View Tests Cases
 @pytest.mark.django_db
 def test_displays_all_list_items(client):
     Item.objects.create(text='test 1')
     Item.objects.create(text='test 2')
 
-    response = client.get('/')
+    response = client.get('/lists/the-only-list-in-the-world/')
 
     assertContains(response, 'test 1')
     assertContains(response, 'test 2')
+
+
+@pytest.mark.django_db
+def test_uses_list_template(client):
+    response = client.get('/lists/the-only-list-in-the-world/')
+    assertTemplateUsed(response, 'list.html')
+
 
 
 # Model Test Cases
