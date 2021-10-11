@@ -41,7 +41,7 @@ def test_cannot_add_empty_list_items(context, live_server):
     assert "2: Make Tea" in table_text
 
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_cannot_add_duplicate_items(context, live_server):
     p = context.new_page()
     p.set_default_timeout(3000)

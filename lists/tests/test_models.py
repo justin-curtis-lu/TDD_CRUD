@@ -53,3 +53,35 @@ def test_get_absolute_url(client):
     list_ = List.objects.create()
     assert list_.get_absolute_url() == f'/lists/{list_.id}/'
 
+
+@pytest.mark.django_db
+def test_duplicate_items_are_invalid(client):
+    list_ = List.objects.create()
+    Item.objects.create(list=list_, text='bla')
+    with pytest.raises(ValidationError):
+        item = Item(list=list_, text='bla')
+        item.full_clean()
+
+
+@pytest.mark.django_db
+def test_CAN_save_same_item_to_different_lists(client):
+    list1 = List.objects.create()
+    list2 = List.objects.create()
+    Item.objects.create(list=list1, text='bla')
+    item = Item(list=list2, text='bla')
+    item.full_clean()
+
+
+@pytest.mark.django_db
+def test_list_ordering(client):
+    list1 = List.objects.create()
+    item1 = Item.objects.create(list=list1, text='i1')
+    item2 = Item.objects.create(list=list1, text='item 2')
+    item3 = Item.objects.create(list=list1, text='3')
+    assert list(Item.objects.all()) == [item1, item2, item3]
+
+
+@pytest.mark.django_db
+def test_string_representation(client):
+    item = Item(text='some text')
+    assert str(item) == 'some text'

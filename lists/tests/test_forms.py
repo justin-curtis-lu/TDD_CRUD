@@ -1,10 +1,10 @@
-from django.test import TestCase
-from pytest_django.asserts import assertTemplateUsed, assertContains, assertNotContains, assertRedirects
+import django
 import pytest
-from django.urls import resolve
-from django.test import TestCase
-from django.http import HttpRequest
-from django.utils.html import escape
+from lists.models import Item, List
+from lists.forms import (
+    DUPLICATE_ITEM_ERROR, EMPTY_ITEM_ERROR,
+    ExistingListItemForm, ItemForm
+)
 
 from lists.forms import EMPTY_ITEM_ERROR, ItemForm
 from lists.models import Item, List
@@ -36,3 +36,35 @@ def test_form_save_handles_saving_to_a_list(client):
     assert new_item == Item.objects.first()
     assert new_item.text == 'do me'
     assert new_item.list == list_
+
+
+# Existing List Test Cases
+@pytest.mark.django_db
+def test_existing_item_form_renders_text_input():
+    l = List.objects.create()
+    form = ExistingListItemForm(for_list=l)
+    assert 'placeholder="Enter a to-do item"' in form.as_p()
+
+@pytest.mark.django_db
+def test_existing_item_form_validation_for_blank_items():
+    l = List.objects.create()
+    form = ExistingListItemForm(for_list=l,data={'text':''})
+    assert form.is_valid() == False
+    assert form.errors['text'] == [EMPTY_ITEM_ERROR]
+
+
+@pytest.mark.django_db
+def test_existing_item_form_validation_for_duplicate_items():
+    l = List.objects.create()
+    Item.objects.create(list=l, text='no duplicates')
+    form = ExistingListItemForm(for_list=l,data={'text':'no duplicates'})
+    assert form.is_valid() == False
+    assert form.errors['text'] == [DUPLICATE_ITEM_ERROR]
+
+
+@pytest.mark.django_db
+def test_form_save(client):
+    list_ = List.objects.create()
+    form = ExistingListItemForm(for_list=list_, data={'text': 'hi'})
+    new_item = form.save()
+    assert new_item == Item.objects.all()[0]

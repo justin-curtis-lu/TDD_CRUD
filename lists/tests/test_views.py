@@ -4,7 +4,10 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.utils.html import escape
 import pytest
-from lists.forms import EMPTY_ITEM_ERROR, ItemForm
+from lists.forms import (
+    DUPLICATE_ITEM_ERROR, EMPTY_ITEM_ERROR,
+    ExistingListItemForm, ItemForm,
+)
 
 from lists.views import home_page
 from lists.models import Item, List
@@ -138,3 +141,14 @@ def test_POST_redirects_to_list_view(client):
     )
 
     assertRedirects(response, f'/lists/{correct_list.id}/')
+
+
+@pytest.mark.django_db
+def test_duplicate_item_validation_errors_show_on_lists_page(client):
+    l1 = List.objects.create()
+    i1 = Item.objects.create(list=l1,text='textey1')
+    response = client.post(f'/lists/{l1.id}/', data={'text':'textey1'})
+    # POST a duplicate item to the same list
+    assertContains(response, escape(DUPLICATE_ITEM_ERROR))
+    assertTemplateUsed(response, 'list.html')
+    assert Item.objects.all().count() == 1
